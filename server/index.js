@@ -1,17 +1,29 @@
 import express from 'express';
-import { PrismaClient } from '@prisma/client';
 import cors from "cors";
+import pg from "pg";
+import * as dotenv from "dotenv";
+import { formidable } from "formidable";
+import fs from "fs";
 
-const router = express.Router();
-const prisma = new PrismaClient();
+const router = express();
+dotenv.config();
 
 router.use(cors());
+router.use(express.urlencoded({ extended: true }));
 router.use(express.json());
+
+const db = new pg.Client({
+  user: "postgres",
+  host: "localhost",
+  database: "MyWines",
+  password: process.env.DB_PASSWORD,
+  port: 5432
+});
 
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   try {
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await db.query("SELECT FROM users WHERE email = " + email);
 
     if (user) {
       if (password === user.password) {
@@ -35,7 +47,7 @@ router.post('/login', async (req, res) => {
 
 router.get('/dashboard', async (req, res) => {
   try {
-    const results = await prisma.wine.findMany();
+    const results = await db.query("SELECT * FROM wines");
     res.json(results);
   } catch (error) {
     console.error("Error collecting wine list:", error);
@@ -45,10 +57,9 @@ router.get('/dashboard', async (req, res) => {
 
 router.post('/dashboard/addWine', async (req, res) => {
   try {
-    const { name, year, type, varietal, rating, consumed, dateConsumed } = req.body;
-    const newWine = await prisma.wine.create({
-      data: { name, year, type, varietal, rating, consumed, dateConsumed }
-    });
+    const { name, type, varietal, year, image } = req.body;
+    const newWine = await db.query("INSERT INTO wines (name, type, varietal, year, image) VALUES ($1, $2, $3,$4, $5)",
+      [name, type, varietal, year, image]);
     res.json(newWine);
     res.redirect('/dashboard');
   } catch (error) {
@@ -60,7 +71,7 @@ router.post('/dashboard/addWine', async (req, res) => {
 router.post('/dashboard/editWine/:id', async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    const wine = await prisma.wine.findUnique({ where: { id } });
+    const wine = await db.query("SELECT FROM wines WHERE id = " + id);
     return res.json(wine);
   } catch (error) {
     console.error("Error fetching wine:", error);
@@ -71,11 +82,9 @@ router.post('/dashboard/editWine/:id', async (req, res) => {
 router.put('/dashboard/editWine/:id', async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    const { name, year, type, varietal, rating, consumed, dateConsumed } = req.body;
-    const editedWine = await prisma.wine.update({
-      where: { id },
-      data: { name, year, type, varietal, rating, consumed, dateConsumed }
-    });
+    const { name, type, varietal, year, image } = req.body;
+    const editedWine = await db.query("UPDATE wines SET (name, type, varietal, year, image) VALUES ($1, $2, $3,$4, $5) WHERE id = " + id,
+      [name, type, varietal, year, image] );
     res.json(editedWine);
     res.redirect('/dashboard');
   } catch (error) {
@@ -84,12 +93,36 @@ router.put('/dashboard/editWine/:id', async (req, res) => {
   }
 });
 
-const PORT = 3001;
-const server = router.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+router.post('/dashboard/addWine/upload', (req, res) => {
+  const form = new formidable.IncomingForm();
+  form.uploadDir = path.join(__dirname, 'public', 'uploads');
+
+  form.parse(req, async (err, fields, files) => {
+    if (err) {
+      console.error('Error parsing upload:', err);
+      res.status(500).json({ error: 'Upload failed' });
+      return;
+    }
+    // Get the uploaded file
+    const file = files.image;
+
+    // Move the uploaded file to the specified directory
+    const oldPath = file.path;
+    const newPath = path.join(form.uploadDir, file.name);
+
+    fs.rename(oldPath, newPath, async (err) => {
+      if (err) {
+        console.error('Error moving file:', err);
+        res.status(500).json({ error: 'Upload failed' });
+        return;
+      }
+      const imageUrl = `/uploads/${file.name}`;
+      res.status(200).json(imageUrl);
+    });
+  });
 });
 
-process.on('beforeExit', () => {
-  prisma.$disconnect();
-  server.close();
+const PORT = 3001;
+router.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });

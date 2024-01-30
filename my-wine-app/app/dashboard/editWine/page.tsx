@@ -1,6 +1,6 @@
 "use client"
 
-import { SetStateAction, useState, useEffect } from 'react';
+import { SetStateAction, useState, useEffect, ChangeEvent } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 
@@ -9,19 +9,10 @@ export default function EditWine() {
     const [year, setYear] = useState('');
     const [type, setType] = useState('red');
     const [varietal, setVarietal] = useState('Chardonnay');
-    const [rating, setRating] = useState('');
-    const [consumed, setConsumed] = useState('no');
-    const [dateConsumed, setDateConsumed] = useState('');
+    const [image, setImage] = useState<File | null>(null);
     const router = useRouter();
 
     const { id } = router.query;
-
-    const handleConsumedChange = (value: SetStateAction<string>) => {
-        setConsumed(value);
-        if (value === 'no') {
-            setDateConsumed('');
-        }
-    };
 
     useEffect(() => {
         const fetchWineDetails = async () => {
@@ -29,12 +20,10 @@ export default function EditWine() {
             const response = await axios.post(`http://localhost:3001/editWine/${id}`);
             const wine = response.data;
             setName(wine.name);
-            setYear(wine.year);
             setType(wine.type);
             setVarietal(wine.varietal);
-            setRating(wine.rating);
-            setConsumed(wine.consumed);
-            setDateConsumed(wine.dateConsumed);
+            setYear(wine.year);
+            setImage(wine.imageUrl)
         } catch (error) {
             console.error('Error fetching wine:', error);
           }
@@ -45,17 +34,41 @@ export default function EditWine() {
         }
       }, [id]);
 
+      const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files.length > 0) {
+          setImage(e.target.files[0]);
+        }
+      }
+
       const handleEditWine = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
+          if (!image) {
+            console.error('No image selected');
+            return;
+          }
+
+          const formData = new FormData();
+          formData.append('image', image);
+
+          const uploadResponse = await fetch(`http://localhost:3001/dashboard/editWine/${id}/upload`, {
+            method: 'POST',
+            body: formData
+          });
+
+          if (!uploadResponse.ok) {
+            console.error('Image upload failed:', uploadResponse.statusText);
+            return;
+          }
+
+          const imageUrl = await uploadResponse.json();
+
           const updatedWineData = {
             name: name,
-            year: year,
             type: type,
             varietal: varietal,
-            rating: rating,
-            consumed: consumed,
-            dateConsumed: dateConsumed,
+            year: year,
+            image: imageUrl,
           };
     
           await axios.put(`http://localhost:3001/dashboard/editWine/${id}`, updatedWineData);
@@ -77,24 +90,6 @@ export default function EditWine() {
             <input
               className="w-full p-2 border rounded-md"
               type="text" value={name} required onChange={(e) => setName(e.target.value)}
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-semibold mb-2">
-              Year
-            </label>
-            <input
-              className="w-full p-2 border rounded-md"
-              type="text" required value={year} onChange={(e) => setYear(e.target.value)}
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-semibold mb-2">
-              Rating
-            </label>
-            <input
-              className="w-full p-2 border rounded-md"
-              type="number" min="1" max="5" required value={rating} onChange={(e) => setRating(e.target.value)}
             />
           </div>
           <div className="mb-4">
@@ -128,30 +123,17 @@ export default function EditWine() {
               <option value="Shiraz">Shiraz</option>
             </select>
           </div>
-          <div className="flex space-x-4">
-            <div className="w-1/2">
-              <label className="block text-gray-700 text-sm font-semibold mb-2">
-                Consumed
-              </label>
-              <select
-                className="w-full p-2 border rounded-md"
-                value={consumed} onChange={(e) => handleConsumedChange(e.target.value)}
-              >
-                <option value="yes">Yes</option>
-                <option value="no">No</option>
-              </select>
-            </div>
-            <div className="w-1/2">
-              <label className="block text-gray-700 text-sm font-semibold mb-2">
-                Date Consumed
-              </label>
-              <input
-                type="date" required
-                className="w-full p-2 border rounded-md"
-                value={dateConsumed}
-                onChange={(e) => setDateConsumed(e.target.value)}
-              />
-            </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-semibold mb-2">
+              Year
+            </label>
+            <input
+              className="w-full p-2 border rounded-md"
+              type="text" required value={year} onChange={(e) => setYear(e.target.value)}
+            />
+          </div>
+          <div className='"mb-4'>
+            <input type='file' onChange={handleImageChange} />
           </div>
         <button
             type="submit"

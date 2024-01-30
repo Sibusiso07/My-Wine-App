@@ -39,12 +39,9 @@ export default function Dashboard() {
               <TableRow className="bg-gray-800 text-white">
                 <TableHead>ID</TableHead>
                 <TableHead>Name</TableHead>
-                <TableHead>Year</TableHead>
                 <TableHead>Type</TableHead>
                 <TableHead>Varietal</TableHead>
-                <TableHead>Rating</TableHead>
-                <TableHead>Consumed</TableHead>
-                <TableHead>Date Consumed</TableHead>
+                <TableHead>Year</TableHead>
                 <TableHead>Action</TableHead>
               </TableRow>
             </TableHeader>
@@ -53,12 +50,9 @@ export default function Dashboard() {
                 <TableRow key={wine.id} className="hover:bg-gray-200">
                   <TableCell>{wine.id}</TableCell>
                   <TableCell>{wine.name}</TableCell>
-                  <TableCell>{wine.year}</TableCell>
                   <TableCell>{wine.type}</TableCell>
                   <TableCell>{wine.varietal}</TableCell>
-                  <TableCell>{wine.rating}</TableCell>
-                  <TableCell>{wine.consumed}</TableCell>
-                  <TableCell>{wine.dateConsumed}</TableCell>
+                  <TableCell>{wine.year}</TableCell>
                   <TableCell>
                     <button
                     className="bg-sky-300 text-white py-1.5 px-2.5 rounded-md mt-2 hover:bg-blue-500"
