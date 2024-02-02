@@ -1,6 +1,6 @@
 "use client"
 
-import { SetStateAction, useState, useEffect, ChangeEvent } from 'react';
+import { useState, useEffect, ChangeEvent } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 
@@ -81,7 +81,7 @@ export default function EditWine() {
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen">
-        <h1 className="text-4xl font-bold mb-4 text-gray-800">Add Wine</h1>
+        <h1 className="text-4xl font-bold mb-4 text-gray-800">Edit Wine</h1>
         <form className="w-4/5 md:w-2/3 lg:w-1/2" onSubmit={handleEditWine}>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-semibold mb-2">
@@ -103,8 +103,14 @@ export default function EditWine() {
               <option value="red">Red</option>
               <option value="white">White</option>
               <option value="rose">Rose</option>
-              <option value="white_blend">White Blend</option>
-              <option value="red_blend">Red Blend</option>
+              <option value="Orange">Orange</option>
+              <option value="Sparkling">Sparkling</option>
+              <option value="Fortified">Fortified</option>
+              <option value="Ice">Ice</option>
+              <option value="Dessert">Dessert</option>
+              <option value="Fruit">Fruit</option>
+              <option value="Honey">Honey</option>
+              <option value="Starch">Starch</option>
             </select>
           </div>
           <div className="mb-4">
@@ -121,6 +127,14 @@ export default function EditWine() {
               <option value="Cabernet_Sauvignon">Cabernet Sauvignon</option>
               <option value="Verdelho">Verdelho</option>
               <option value="Shiraz">Shiraz</option>
+              <option value="Pinot_noir">Pinot Noir</option>
+              <option value="Riesling">Riesling</option>
+              <option value="Syrah">Syrah</option>
+              <option value="Malbec">Malbec</option>
+              <option value="Gamay">Gamay</option>
+              <option value="Vlognier">Vlognier</option>
+              <option value="Muscat">Muscat</option>
+              <option value="Nebbiolo">Nebbiolo</option>
             </select>
           </div>
           <div className="mb-4">

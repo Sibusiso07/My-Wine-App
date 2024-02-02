@@ -78,11 +78,17 @@ export default function AddWine() {
             className="w-full p-2 border rounded-md"
             required value={type} onChange={(e) => setType(e.target.value)}
           >
-            <option value="red">Red</option>
-            <option value="white">White</option>
-            <option value="rose">Rose</option>
-            <option value="white_blend">White Blend</option>
-            <option value="red_blend">Red Blend</option>
+            <option value="Red">Red</option>
+            <option value="White">White</option>
+            <option value="Rose">Rose</option>
+            <option value="Orange">Orange</option>
+            <option value="Sparkling">Sparkling</option>
+            <option value="Fortified">Fortified</option>
+            <option value="Ice">Ice</option>
+            <option value="Dessert">Dessert</option>
+            <option value="Fruit">Fruit</option>
+            <option value="Honey">Honey</option>
+            <option value="Starch">Starch</option>
           </select>
         </div>
         <div className="mb-4">
@@ -99,6 +105,14 @@ export default function AddWine() {
             <option value="Cabernet_Sauvignon">Cabernet Sauvignon</option>
             <option value="Verdelho">Verdelho</option>
             <option value="Shiraz">Shiraz</option>
+            <option value="Pinot_noir">Pinot Noir</option>
+            <option value="Riesling">Riesling</option>
+            <option value="Syrah">Syrah</option>
+            <option value="Malbec">Malbec</option>
+            <option value="Gamay">Gamay</option>
+            <option value="Vlognier">Vlognier</option>
+            <option value="Muscat">Muscat</option>
+            <option value="Nebbiolo">Nebbiolo</option>
           </select>
         </div>
         <div className="mb-4">

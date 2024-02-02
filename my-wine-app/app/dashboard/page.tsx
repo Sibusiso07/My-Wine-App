@@ -11,14 +11,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 export default function Dashboard() {
     const [wineList, setWineList] = useState<any[] | null>(null);
+    const router = useRouter();
 
     useEffect(() => {
         const fetchWineList = async () => {
             try {
                 const response = await axios.get('http://localhost:3001/dashboard');
+                console.log(response);
                 setWineList(response.data);
             } catch (error) {
                 console.error('Error fetching wine list:', error);
@@ -26,6 +29,24 @@ export default function Dashboard() {
         };
         fetchWineList();
     }, []);
+
+    const handleAdd = () => {
+      router.push('/dashboard/addWine');
+    }
+
+    const handleEdit = (wine: { id: number; }) => {
+      router.push({
+        pathname: '/dashboard/editWine',
+        query: { id: wine.id}
+      });
+    }
+
+    const handleView = (wine: { id: any; }) => {
+      router.push({
+        pathname: '/dashboard/viewWine',
+        query: { id: wine.id}
+      });
+    }
 
     return (
         <div className="flex flex-col items-center my-10 min-h-screen">
@@ -42,7 +63,8 @@ export default function Dashboard() {
                 <TableHead>Type</TableHead>
                 <TableHead>Varietal</TableHead>
                 <TableHead>Year</TableHead>
-                <TableHead>Action</TableHead>
+                <TableHead></TableHead>
+                <TableHead></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -55,9 +77,13 @@ export default function Dashboard() {
                   <TableCell>{wine.year}</TableCell>
                   <TableCell>
                     <button
-                    className="bg-sky-300 text-white py-1.5 px-2.5 rounded-md mt-2 hover:bg-blue-500"
-                    type="submit"
-                    >
+                    className="bg-sky-300 text-white py-1.5 px-2.5 rounded-md mt-2 hover:bg-sky-500" onClick={() => handleView(wine)}>
+                    View
+                    </button>
+                  </TableCell>
+                  <TableCell>
+                    <button
+                    className="bg-sky-600 text-white py-1.5 px-2.5 rounded-md mt-2 hover:bg-sky-800" onClick={() => handleEdit(wine)}>
                     Edit
                     </button>
                   </TableCell>
@@ -66,8 +92,8 @@ export default function Dashboard() {
             </TableBody>
           </Table>
         </div>
-        <button className="bg-blue-500 text-white py-2 px-4 rounded-md mt-4">
-        Add
+        <button className="bg-blue-500 text-white py-2 px-4 rounded-md mt-4 hover:bg-sky-700" onClick={handleAdd}>
+          Add
         </button>
       </div>
     );

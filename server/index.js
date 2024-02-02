@@ -19,17 +19,18 @@ const db = new pg.Client({
   password: process.env.DB_PASSWORD,
   port: 5432
 });
+db.connect();
 
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
+  console.log(req.body);
   try {
-    const user = await db.query("SELECT FROM users WHERE email = " + email);
-
+    const user = await db.query("SELECT * FROM users WHERE email = $1", [email]);
+    const results = user.rows;
     if (user) {
-      if (password === user.password) {
+      if (password === results[0].password) {
         console.log("Login Successful");
         res.status(200).json({ message: "Login Successful" });
-        res.redirect('/dashboard');
       } else {
         console.log("Incorrect Password");
         res.status(401).json({ message: "Incorrect Password" });
@@ -48,7 +49,8 @@ router.post('/login', async (req, res) => {
 router.get('/dashboard', async (req, res) => {
   try {
     const results = await db.query("SELECT * FROM wines");
-    res.json(results);
+    console.log(results.rows)
+    res.json(results.rows);
   } catch (error) {
     console.error("Error collecting wine list:", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -71,7 +73,7 @@ router.post('/dashboard/addWine', async (req, res) => {
 router.post('/dashboard/editWine/:id', async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    const wine = await db.query("SELECT FROM wines WHERE id = " + id);
+    const wine = await db.query("SELECT * FROM wines WHERE id = " + id);
     return res.json(wine);
   } catch (error) {
     console.error("Error fetching wine:", error);

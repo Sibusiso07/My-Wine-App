@@ -17,12 +17,17 @@ export default function Home() {
   };
 
   const handleLogin = async () => {
+    console.log(userEmail + userPassword);
     try {
       const response = await axios.post('http://localhost:3001/login', {
         email: userEmail,
         password: userPassword,
       });
-      console.log(response.data);
+      if (response.status === 200 && response.data.message === "Login Successful") {
+        window.location.href = '/dashboard';
+      } else {
+        alert(response.data.message);
+      }
     } catch (error) {
       console.error('Error during login:', error);
     }
@@ -44,7 +49,7 @@ export default function Home() {
           />
           <button
             className="bg-sky-500 hover:bg-sky-600 rounded-md w-full py-2 px-4 font-semibold text-white focus:outline-none focus:ring focus:border-sky-300 transition duration-300"
-            type="button" onClick={handleLogin}
+            type="button" onClick={handleLogin} 
           >
             Login
           </button>
