@@ -2,7 +2,7 @@
 
 import { useState, useEffect, ChangeEvent } from 'react';
 import axios from 'axios';
-import { useRouter } from 'next/router';
+import { useSearchParams, useRouter } from 'next/navigation';
 
 export default function EditWine() {
     const [name, setName] = useState('');
@@ -10,29 +10,31 @@ export default function EditWine() {
     const [type, setType] = useState('red');
     const [varietal, setVarietal] = useState('Chardonnay');
     const [image, setImage] = useState<File | null>(null);
+    const searchParams = useSearchParams();
     const router = useRouter();
 
-    const { id } = router.query;
+    const params  = (searchParams.get('id'));
+    const id = Number(params);
 
     useEffect(() => {
-        const fetchWineDetails = async () => {
-          try {
-            const response = await axios.post(`http://localhost:3001/editWine/${id}`);
-            const wine = response.data;
-            setName(wine.name);
-            setType(wine.type);
-            setVarietal(wine.varietal);
-            setYear(wine.year);
-            setImage(wine.imageUrl)
+      const fetchWineDetails = async () => {
+        try {
+          const response = await axios.post(`http://localhost:3001/dashboard/editWine/${id}`);
+          const wine = response.data[0];
+          setName(wine.name);
+          setType(wine.type);
+          setVarietal(wine.varietal);
+          setYear(wine.year);
+          setImage(wine.image);
         } catch (error) {
-            console.error('Error fetching wine:', error);
-          }
-        };
-    
-        if (id) {
-          fetchWineDetails();
+          console.error('Error fetching wine:', error);
         }
-      }, [id]);
+      };
+      if (id) {
+        fetchWineDetails();
+      }
+    }, [id]);
+    
 
       const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {

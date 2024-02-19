@@ -34,18 +34,14 @@ export default function Dashboard() {
       router.push('/dashboard/addWine');
     }
 
-    const handleEdit = (wine: { id: number; }) => {
-      router.push({
-        pathname: '/dashboard/editWine',
-        query: { id: wine.id}
-      });
+    const handleEdit = (wine: { id: number }) => {
+      const url = `/dashboard/editWine?id=${wine.id}`;
+      router.push(url);
     }
 
-    const handleView = (wine: { id: any; }) => {
-      router.push({
-        pathname: '/dashboard/viewWine',
-        query: { id: wine.id}
-      });
+    const handleView = (wine: { id: number }) => {
+      const url = `/dashboard/viewWine?id=${wine.id}`;
+      router.push(url);
     }
 
     return (

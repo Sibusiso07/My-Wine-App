@@ -23,7 +23,7 @@ db.connect();
 
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
-  console.log(req.body);
+  // console.log(req.body);
   try {
     const user = await db.query("SELECT * FROM users WHERE email = $1", [email]);
     const results = user.rows;
@@ -49,7 +49,7 @@ router.post('/login', async (req, res) => {
 router.get('/dashboard', async (req, res) => {
   try {
     const results = await db.query("SELECT * FROM wines");
-    console.log(results.rows)
+    // console.log(results.rows)
     res.json(results.rows);
   } catch (error) {
     console.error("Error collecting wine list:", error);
@@ -74,7 +74,7 @@ router.post('/dashboard/editWine/:id', async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     const wine = await db.query("SELECT * FROM wines WHERE id = " + id);
-    return res.json(wine);
+    res.json(wine.rows);
   } catch (error) {
     console.error("Error fetching wine:", error);
     res.status(500).json({ message: "Internal Server Error" });
