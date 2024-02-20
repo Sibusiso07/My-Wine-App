@@ -2,8 +2,6 @@ import express from 'express';
 import cors from "cors";
 import pg from "pg";
 import * as dotenv from "dotenv";
-import { formidable } from "formidable";
-import fs from "fs";
 
 const router = express();
 dotenv.config();
@@ -95,34 +93,6 @@ router.put('/dashboard/editWine/:id', async (req, res) => {
   }
 });
 
-router.post('/dashboard/addWine/upload', (req, res) => {
-  const form = new formidable.IncomingForm();
-  form.uploadDir = path.join(__dirname, 'public', 'uploads');
-
-  form.parse(req, async (err, fields, files) => {
-    if (err) {
-      console.error('Error parsing upload:', err);
-      res.status(500).json({ error: 'Upload failed' });
-      return;
-    }
-    // Get the uploaded file
-    const file = files.image;
-
-    // Move the uploaded file to the specified directory
-    const oldPath = file.path;
-    const newPath = path.join(form.uploadDir, file.name);
-
-    fs.rename(oldPath, newPath, async (err) => {
-      if (err) {
-        console.error('Error moving file:', err);
-        res.status(500).json({ error: 'Upload failed' });
-        return;
-      }
-      const imageUrl = `/uploads/${file.name}`;
-      res.status(200).json(imageUrl);
-    });
-  });
-});
 
 const PORT = 3001;
 router.listen(PORT, () => {

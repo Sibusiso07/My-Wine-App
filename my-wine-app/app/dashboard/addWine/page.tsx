@@ -8,45 +8,28 @@ export default function AddWine() {
     const [type, setType] = useState('red');
     const [varietal, setVarietal] = useState('Chardonnay');
     const [year, setYear] = useState('');
-    const [image, setImage] = useState<File | null>(null);
+    const [image, setImage] = useState('');
 
     const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
       if (e.target.files && e.target.files.length > 0) {
-        setImage(e.target.files[0]);
+        const file = e.target.files[0];
+        const imagePath = `public/images/${file.name}`;
+        console.log("Image location:", imagePath);
+        setImage(imagePath);
       }
-    }
+    };
+    
 
     const handleAddWine = async (e: FormEvent) => {
         e.preventDefault();
 
         try {
-          if (!image) {
-            console.error('No image selected');
-            return;
-          }
-
-          const formData = new FormData();
-          formData.append('image', image);
-
-          const uploadResponse = await fetch('http://localhost:3001/dashboard/addWine/upload', {
-            method: 'POST',
-            body: formData
-          });
-
-          if (!uploadResponse.ok) {
-            console.error('Image upload failed:', uploadResponse.statusText);
-            return;
-          }
-
-          const imageUrl = await uploadResponse.json();
-
-
             const newWine = {
             name: name,
             year: year,
             type: type,
             varietal: varietal,
-            image: imageUrl,
+            image: image,
             };
             
             const response = await axios.post('http://localhost:3001/addWine', newWine);
