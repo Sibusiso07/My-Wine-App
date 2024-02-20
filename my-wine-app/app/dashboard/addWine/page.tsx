@@ -13,12 +13,11 @@ export default function AddWine() {
     const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
       if (e.target.files && e.target.files.length > 0) {
         const file = e.target.files[0];
-        const imagePath = `public/images/${file.name}`;
+        const imagePath = `/uploads/${file.name}`;
         console.log("Image location:", imagePath);
         setImage(imagePath);
       }
     };
-    
 
     const handleAddWine = async (e: FormEvent) => {
         e.preventDefault();
@@ -32,8 +31,12 @@ export default function AddWine() {
             image: image,
             };
             
-            const response = await axios.post('http://localhost:3001/addWine', newWine);
-            console.log('New wine added:', response.data);
+            const response = await axios.post('http://localhost:3001/dashboard/addWine', newWine);
+            if (response.status === 200 && response.data.message === "Wine added successfully") {
+              window.location.href = '/dashboard';
+            } else {
+              alert(response.data.message);
+            }
         } catch (error) {
             console.error('Error adding wine:', error);
         }

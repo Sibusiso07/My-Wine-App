@@ -2,7 +2,7 @@
 
 import { useState, useEffect} from 'react';
 import axios from 'axios';
-import { useRouter } from 'next/router';
+import { useSearchParams} from 'next/navigation';
 import Image from 'next/image';
 
 export default function EditWine() {
@@ -11,20 +11,22 @@ export default function EditWine() {
     const [type, setType] = useState('red');
     const [varietal, setVarietal] = useState('Chardonnay');
     const [image, setImage] = useState('');
-    const router = useRouter();
+    const searchParams = useSearchParams();
 
-    const { id } = router.query;
+    const params  = (searchParams.get('id'));
+    const id = Number(params);
 
     useEffect(() => {
         const fetchWineDetails = async () => {
           try {
-            const response = await axios.post(`http://localhost:3001/editWine/${id}`);
-            const wine = response.data;
+            const response = await axios.post(`http://localhost:3001/dashboard/editWine/${id}`);
+            const wine = response.data[0];
+            console.log(wine);
             setName(wine.name);
             setType(wine.type);
             setVarietal(wine.varietal);
             setYear(wine.year);
-            setImage(wine.imageUrl)
+            setImage(wine.image)
         } catch (error) {
             console.error('Error fetching wine:', error);
           }
@@ -35,6 +37,10 @@ export default function EditWine() {
         }
       }, [id]);
 
+      const handleBack = () => {
+        window.location.href = '/dashboard';
+      }
+
     return (
         <div className="flex flex-col items-center justify-center min-h-screen">
             <h1 className="text-4xl font-bold mb-4 text-gray-800">Wine Details</h1>
@@ -44,7 +50,7 @@ export default function EditWine() {
                     src={image}
                     width={400}
                     height={400}
-                    alt={name}
+                    alt={`${name} Wine`}
                     className="mx-auto"
                     />
                 </div>
@@ -59,7 +65,7 @@ export default function EditWine() {
                     <p className="text-gray-700">{year}</p>
                 </div>
                 <button
-                    type="submit"
+                    type='button' onClick={handleBack}
                     className="bg-sky-500 hover:bg-sky-600 rounded-md w-1/3 mx-auto py-2 px-4 font-semibold text-white focus:outline-none focus:ring focus:border-sky-300 transition duration-300"
                 >
                     Back

@@ -54,7 +54,6 @@ export default function Dashboard() {
             </TableCaption>
             <TableHeader>
               <TableRow className="bg-gray-800 text-white">
-                <TableHead>ID</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Type</TableHead>
                 <TableHead>Varietal</TableHead>
@@ -66,7 +65,6 @@ export default function Dashboard() {
             <TableBody>
               {Array.isArray(wineList) && wineList.map((wine) => (
                 <TableRow key={wine.id} className="hover:bg-gray-200">
-                  <TableCell>{wine.id}</TableCell>
                   <TableCell>{wine.name}</TableCell>
                   <TableCell>{wine.type}</TableCell>
                   <TableCell>{wine.varietal}</TableCell>

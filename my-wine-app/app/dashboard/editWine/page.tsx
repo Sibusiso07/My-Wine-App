@@ -9,7 +9,7 @@ export default function EditWine() {
     const [year, setYear] = useState('');
     const [type, setType] = useState('red');
     const [varietal, setVarietal] = useState('Chardonnay');
-    const [image, setImage] = useState<File | null>(null);
+    const [image, setImage] = useState('');
     const searchParams = useSearchParams();
     const router = useRouter();
 
@@ -36,46 +36,32 @@ export default function EditWine() {
     }, [id]);
     
 
-      const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files.length > 0) {
-          setImage(e.target.files[0]);
-        }
+    const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files && e.target.files.length > 0) {
+        const file = e.target.files[0];
+        const imagePath = `/uploads/${file.name}`;
+        console.log("Image location:", imagePath);
+        setImage(imagePath);
       }
+    };
 
       const handleEditWine = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-          if (!image) {
-            console.error('No image selected');
-            return;
-          }
-
-          const formData = new FormData();
-          formData.append('image', image);
-
-          const uploadResponse = await fetch(`http://localhost:3001/dashboard/editWine/${id}/upload`, {
-            method: 'POST',
-            body: formData
-          });
-
-          if (!uploadResponse.ok) {
-            console.error('Image upload failed:', uploadResponse.statusText);
-            return;
-          }
-
-          const imageUrl = await uploadResponse.json();
-
           const updatedWineData = {
             name: name,
             type: type,
             varietal: varietal,
             year: year,
-            image: imageUrl,
+            image: image,
           };
     
-          await axios.put(`http://localhost:3001/dashboard/editWine/${id}`, updatedWineData);
-    
-          router.push('/dashboard');
+          const response = await axios.put(`http://localhost:3001/dashboard/editWine/${id}`, updatedWineData);
+          if (response.status === 200 && response.data.message === "Wine edited successfully") {
+            window.location.href = '/dashboard';
+          } else {
+            alert(response.data.message);
+          }
         } catch (error) {
           console.error('Error editing wine:', error);
         }

@@ -21,7 +21,6 @@ db.connect();
 
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
-  // console.log(req.body);
   try {
     const user = await db.query("SELECT * FROM users WHERE email = $1", [email]);
     const results = user.rows;
@@ -47,7 +46,6 @@ router.post('/login', async (req, res) => {
 router.get('/dashboard', async (req, res) => {
   try {
     const results = await db.query("SELECT * FROM wines");
-    // console.log(results.rows)
     res.json(results.rows);
   } catch (error) {
     console.error("Error collecting wine list:", error);
@@ -60,8 +58,7 @@ router.post('/dashboard/addWine', async (req, res) => {
     const { name, type, varietal, year, image } = req.body;
     const newWine = await db.query("INSERT INTO wines (name, type, varietal, year, image) VALUES ($1, $2, $3,$4, $5)",
       [name, type, varietal, year, image]);
-    res.json(newWine);
-    res.redirect('/dashboard');
+    res.status(200).json({ message: "Wine added successfully" });
   } catch (error) {
     console.error("Error creating wine:", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -83,10 +80,9 @@ router.put('/dashboard/editWine/:id', async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     const { name, type, varietal, year, image } = req.body;
-    const editedWine = await db.query("UPDATE wines SET (name, type, varietal, year, image) VALUES ($1, $2, $3,$4, $5) WHERE id = " + id,
+    const editedWine = await db.query("UPDATE wines SET name = $1, type = $2, varietal = $3, year = $4, image = $5 WHERE id = " + id,
       [name, type, varietal, year, image] );
-    res.json(editedWine);
-    res.redirect('/dashboard');
+    res.status(200).json({ message: "Wine edited successfully" });
   } catch (error) {
     console.error("Error editing wine:", error);
     res.status(500).json({ message: "Internal Server Error" });
