@@ -6,10 +6,12 @@ import * as dotenv from "dotenv";
 const router = express();
 dotenv.config();
 
+// Setting the code to use cors as middleware and also use json to pass the body between the frontend and the backend
 router.use(cors());
 router.use(express.urlencoded({ extended: true }));
 router.use(express.json());
 
+// Connecting to a postgres db
 const db = new pg.Client({
   user: "postgres",
   host: "localhost",
@@ -18,6 +20,8 @@ const db = new pg.Client({
   port: 5432
 });
 db.connect();
+
+// Routes the the code uses
 
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
@@ -89,7 +93,7 @@ router.put('/dashboard/editWine/:id', async (req, res) => {
   }
 });
 
-
+// Setting up the listing port of the code
 const PORT = 3001;
 router.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

@@ -1,6 +1,6 @@
-"use client"
+"use client" 
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react"; // Importing necessary modules from React for handling state and side effects.
 import {
   Table,
   TableBody,
@@ -9,41 +9,47 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import axios from "axios";
-import { useRouter } from "next/navigation";
+} from "@/components/ui/table"; // Importing table components from a custom module.
+import axios from "axios"; // Importing axios for making HTTP requests.
+import { useRouter } from "next/navigation"; // Importing useRouter hook from Next.js for navigation.
 
 export default function Dashboard() {
-    const [wineList, setWineList] = useState<any[] | null>(null);
-    const router = useRouter();
+    const [wineList, setWineList] = useState<any[] | null>(null); // State hook for storing wine list data.
+    const router = useRouter(); // Initializing useRouter hook for navigation.
 
+    // Effect hook to fetch wine list data when the component mounts.
     useEffect(() => {
         const fetchWineList = async () => {
             try {
+                // Sending a GET request to retrieve wine list data from the server.
                 const response = await axios.get('http://localhost:3001/dashboard');
-                console.log(response);
-                setWineList(response.data);
+                console.log(response); // Logging the response for debugging purposes.
+                setWineList(response.data); // Updating the wine list state with fetched data.
             } catch (error) {
-                console.error('Error fetching wine list:', error);
+                console.error('Error fetching wine list:', error); // Logging any errors that occur during fetching.
             }
         };
-        fetchWineList();
-    }, []);
+        fetchWineList(); // Calling the fetchWineList function when the component mounts.
+    }, []); // Empty dependency array ensures the effect runs only once after the component mounts.
 
+    // Function to navigate to the add wine page.
     const handleAdd = () => {
       router.push('/dashboard/addWine');
     }
 
+    // Function to navigate to the edit wine page for a specific wine.
     const handleEdit = (wine: { id: number }) => {
       const url = `/dashboard/editWine?id=${wine.id}`;
       router.push(url);
     }
 
+    // Function to navigate to the view wine page for a specific wine.
     const handleView = (wine: { id: number }) => {
       const url = `/dashboard/viewWine?id=${wine.id}`;
       router.push(url);
     }
 
+    // Render the dashboard with wine list and actions.
     return (
         <div className="flex flex-col items-center my-10 min-h-screen">
         <h1 className="text-4xl font-bold mb-4 text-gray-800">Wine List</h1>
