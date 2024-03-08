@@ -72,7 +72,7 @@ export default function EditWine() {
       };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen">
+        <div className="flex flex-col items-center justify-center min-h-screen py-10">
         <h1 className="text-4xl font-bold mb-4 text-gray-800">Edit Wine</h1>
         <form className="w-4/5 md:w-2/3 lg:w-1/2" onSubmit={handleEditWine}>
           <div className="mb-4">
@@ -92,7 +92,17 @@ export default function EditWine() {
               className="w-full p-2 border rounded-md"
               required value={type} onChange={(e) => setType(e.target.value)}
             >
-              {/* Dropdown options for wine types */}
+              <option value="red">Red</option>
+              <option value="white">White</option>
+              <option value="rose">Rose</option>
+              <option value="Orange">Orange</option>
+              <option value="Sparkling">Sparkling</option>
+              <option value="Fortified">Fortified</option>
+              <option value="Ice">Ice</option>
+              <option value="Dessert">Dessert</option>
+              <option value="Fruit">Fruit</option>
+              <option value="Honey">Honey</option>
+              <option value="Starch">Starch</option>
             </select>
           </div>
           <div className="mb-4">
@@ -103,7 +113,20 @@ export default function EditWine() {
               className="w-full p-2 border rounded-md"
               required value={varietal} onChange={(e) => setVarietal(e.target.value)}
             >
-              {/* Dropdown options for wine varietals */}
+              <option value="Chardonnay">Chardonnay</option>
+              <option value="Merlot">Merlot</option>
+              <option value="Chenin_Blanc">Chenin Blanc</option>
+              <option value="Cabernet_Sauvignon">Cabernet Sauvignon</option>
+              <option value="Verdelho">Verdelho</option>
+              <option value="Shiraz">Shiraz</option>
+              <option value="Pinot_noir">Pinot Noir</option>
+              <option value="Riesling">Riesling</option>
+              <option value="Syrah">Syrah</option>
+              <option value="Malbec">Malbec</option>
+              <option value="Gamay">Gamay</option>
+              <option value="Vlognier">Vlognier</option>
+              <option value="Muscat">Muscat</option>
+              <option value="Nebbiolo">Nebbiolo</option>
             </select>
           </div>
           <div className="mb-4">

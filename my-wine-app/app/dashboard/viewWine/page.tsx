@@ -45,7 +45,7 @@ export default function EditWine() {
       }
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen">
+        <div className="flex flex-col items-center justify-center min-h-screen py-10">
             <h1 className="text-4xl font-bold mb-4 text-gray-800">Wine Details</h1>
             <form className="w-4/5 md:w-2/3 lg:w-1/2 bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mb-4">
                 <div className="mb-4">

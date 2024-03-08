@@ -51,7 +51,7 @@ export default function Dashboard() {
 
     // Render the dashboard with wine list and actions.
     return (
-        <div className="flex flex-col items-center my-10 min-h-screen">
+        <div className="flex flex-col items-center my-10 min-h-screen py-10">
         <h1 className="text-4xl font-bold mb-4 text-gray-800">Wine List</h1>
         <div className="w-4/5">
           <Table className="w-full my-10">
