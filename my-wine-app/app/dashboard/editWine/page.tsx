@@ -38,17 +38,57 @@ export default function EditWine() {
     }, [id]);
     
 
-    const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-      if (e.target.files && e.target.files.length > 0) {
-        const file = e.target.files[0];
-        const imagePath = `/uploads/${file.name}`;
-        console.log("Image location:", imagePath);
-        setImage(imagePath);
-      }
-    };
+    const handleEditWine = async (event: ChangeEvent<HTMLFormElement>) => {
+      event.preventDefault(); // Preventing default form submission behavior.
 
-      const handleEditWine = async (e: React.FormEvent) => {
-        e.preventDefault();
+      // Extract the file from the file input field in the form.
+      const files = event.currentTarget.file?.files;
+      if (files && files.length > 0) {
+        const file = files[0]; // Assume single file upload and take the first file.
+
+        const reader =new FileReader(); // Create a FileReader to read the file.
+
+        // Define what happens when the file has been read successfully.
+        reader.onload = async (e: ProgressEvent<FileReader>) => {
+          // Ensure the file content is read as a string.
+          if (e.target && typeof e.target.result === "string") {
+            const base64String = e.target.result; // The file content in Base64 format.
+
+            try {
+              // Attempt to send the Base64 string to the server via POST request.
+              const results = await axios.post(
+                "../api/upload",
+                { image: base64String, filename: file.name },
+                { headers: { "Content-Type": "application/json" } }
+              );
+              // Log the server's response to the console.
+              console.log(results.data);
+              // Setting the image path
+              let imagePath = `/uploads/${results.data.name}`; 
+              setImage(imagePath);
+              console.log(imagePath)
+
+            } catch (error) {
+              // Handle errors in the request and show an appropriate message.
+              if (axios.isAxiosError(error) && error.response) {
+                // If the error is from Axios and contains a response, console log the error message.
+                console.log(`Error uploading image: ${error.response.data.message}`);
+              } else {
+                // For other types of errors, log to the console.
+                console.error("An unexpected error occurred", error);
+              }
+            }
+          } else {
+            console.error("FileReader did not load the file correctly.");
+          }
+        };
+
+        // Initiate reading the file as a Base64-encoded string.
+        reader.readAsDataURL(file);
+      } else {
+        console.log("No file selected");
+      };
+
         try {
           // Constructing updated wine data object.
           const updatedWineData = {
@@ -63,6 +103,7 @@ export default function EditWine() {
           const response = await axios.put(`http://localhost:3001/dashboard/editWine/${id}`, updatedWineData);
           if (response.status === 200 && response.data.message === "Wine edited successfully") {
             window.location.href = '/dashboard'; // Redirecting to the dashboard upon successful editing.
+            // console.log(response.data.message);
           } else {
             alert(response.data.message); // Showing an alert if editing fails.
           }
@@ -139,7 +180,7 @@ export default function EditWine() {
             />
           </div>
           <div className='"mb-4'>
-            <input type='file' onChange={handleImageChange} />
+            <input type="file" name="file" id="fileUpload" />
           </div>
         <button
             type="submit"

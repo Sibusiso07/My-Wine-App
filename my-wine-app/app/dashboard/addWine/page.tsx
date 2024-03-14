@@ -1,6 +1,6 @@
 "use client" 
 
-import { ChangeEvent, FormEvent, useState } from 'react'; // Importing necessary modules from React for handling state and events.
+import { ChangeEvent, useState } from 'react'; // Importing necessary modules from React for handling state and events.
 import axios from 'axios'; // Importing axios for making HTTP requests.
 
 export default function AddWine() {
@@ -10,19 +10,57 @@ export default function AddWine() {
     const [year, setYear] = useState(''); // State hook for storing wine year.
     const [image, setImage] = useState(''); // State hook for storing image URL.
 
-    // Function to handle image change event.
-    const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-      if (e.target.files && e.target.files.length > 0) {
-        const file = e.target.files[0];
-        const imagePath = `/uploads/${file.name}`; // Generating the image path.
-        console.log("Image location:", imagePath);
-        setImage(imagePath); // Setting the image path in state.
-      }
-    };
-
     // Function to handle adding a new wine.
-    const handleAddWine = async (e: FormEvent) => {
-        e.preventDefault(); // Preventing default form submission behavior.
+    const handleAddWine = async (event: ChangeEvent<HTMLFormElement>) => {
+        event.preventDefault(); // Preventing default form submission behavior.
+
+        // Extract the file from the file input field in the form.
+        const files = event.currentTarget.file?.files;
+        if (files && files.length > 0) {
+          const file = files[0]; // Assume single file upload and take the first file.
+
+          const reader =new FileReader(); // Create a FileReader to read the file.
+
+          // Define what happens when the file has been read successfully.
+          reader.onload = async (e: ProgressEvent<FileReader>) => {
+            // Ensure the file content is read as a string.
+            if (e.target && typeof e.target.result === "string") {
+              const base64String = e.target.result; // The file content in Base64 format.
+
+              try {
+                // Attempt to send the Base64 string to the server via POST request.
+                const results = await axios.post(
+                  "../api/upload",
+                  { image: base64String, filename: file.name },
+                  { headers: { "Content-Type": "application/json" } }
+                );
+                // Log the server's response to the console.
+                console.log(results.data);
+                // Setting the image path
+                let imagePath = `/uploads/${results.data.name}`; 
+                setImage(imagePath);
+                console.log(imagePath)
+
+              } catch (error) {
+                // Handle errors in the request and show an appropriate message.
+                if (axios.isAxiosError(error) && error.response) {
+                  // If the error is from Axios and contains a response, console log the error message.
+                  console.log(`Error uploading image: ${error.response.data.message}`);
+                } else {
+                  // For other types of errors, log to the console.
+                  console.error("An unexpected error occurred", error);
+                }
+              }
+            } else {
+              console.error("FileReader did not load the file correctly.");
+            }
+          };
+
+          // Initiate reading the file as a Base64-encoded string.
+          reader.readAsDataURL(file);
+        } else {
+          console.log("No file selected");
+        };
 
         try {
             const newWine = {
@@ -117,7 +155,7 @@ export default function AddWine() {
           />
         </div>
         <div className='"mb-4'>
-          <input type='file' onChange={handleImageChange} /> {/* Input for selecting wine image */}
+          <input type='file' name='file' id='fileUpload' /> {/* Input for selecting wine image */}
         </div>
           <button
             type="submit"

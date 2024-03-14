@@ -22,13 +22,14 @@ export default function EditWine() {
             // Fetching wine details from the server based on the provided 'id'.
             const response = await axios.post(`http://localhost:3001/dashboard/editWine/${id}`);
             const wine = response.data[0];
-            console.log(wine);
+            // console.log(wine);
             // Updating state with the fetched wine details.
             setName(wine.name);
             setType(wine.type);
             setVarietal(wine.varietal);
             setYear(wine.year);
-            setImage(wine.image)
+            setImage(wine.image);
+            console.log(image);
         } catch (error) {
             console.error('Error fetching wine:', error);
           }
