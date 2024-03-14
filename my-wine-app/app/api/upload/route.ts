@@ -1,9 +1,11 @@
+// Import necessary functions and types from external libraries.
+import { randomBytes } from "crypto";
 import { writeFile } from "fs/promises";
 import { join } from "path";
 
-type Body = {
-    image: string,
-    filename: string,
+type RequestBody = {
+    image: string; // Base64-encoded image data.
+    filename: string;
 };
 
 // Converts Base64 string to binary data
@@ -21,7 +23,7 @@ function base64ToBuffer(base64: string): Buffer | null {
 
 export async function POST(request: Request) {
     // Parse the JSON body from the request and assert its type.
-    const data = (await request.json()) as Body;
+    const data = (await request.json()) as RequestBody;
 
     // Convert the Base64-encoded image data from the request into a buffer.
     const imageBuffer = base64ToBuffer(data.image);
@@ -34,7 +36,7 @@ export async function POST(request: Request) {
         const filePath = join(process.cwd(), "public", "uploads", filename);
 
         // Write the image file to the disk in the specified path.
-        await writeFile(filePath, filename);
+        await writeFile(filePath, imageBuffer);
 
         // Return a success response with the name of the uploaded file.
         return new Response(

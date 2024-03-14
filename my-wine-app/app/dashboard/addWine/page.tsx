@@ -8,7 +8,7 @@ export default function AddWine() {
     const [type, setType] = useState('red'); // State hook for storing wine type.
     const [varietal, setVarietal] = useState('Chardonnay'); // State hook for storing wine varietal.
     const [year, setYear] = useState(''); // State hook for storing wine year.
-    const [image, setImage] = useState(''); // State hook for storing image URL.
+    let imagePath = '';
 
     // Function to handle adding a new wine.
     const handleAddWine = async (event: ChangeEvent<HTMLFormElement>) => {
@@ -21,69 +21,54 @@ export default function AddWine() {
 
           const reader =new FileReader(); // Create a FileReader to read the file.
 
-          // Define what happens when the file has been read successfully.
-          reader.onload = async (e: ProgressEvent<FileReader>) => {
-            // Ensure the file content is read as a string.
-            if (e.target && typeof e.target.result === "string") {
-              const base64String = e.target.result; // The file content in Base64 format.
+           // Define what happens when the file has been read successfully.
+        reader.onload = async (e: ProgressEvent<FileReader>) => {
+          // Ensure the file content is read as a string.
+          if (e.target && typeof e.target.result === "string") {
+            const base64String = e.target.result; // The file content in Base64 format.
 
-              try {
-                // Attempt to send the Base64 string to the server via POST request.
-                const results = await axios.post(
-                  "../api/upload",
-                  { image: base64String, filename: file.name },
-                  { headers: { "Content-Type": "application/json" } }
-                );
-                // Log the server's response to the console.
-                console.log(results.data);
-                // Setting the image path
-                let imagePath = `/uploads/${results.data.name}`; 
-                setImage(imagePath);
-                console.log(imagePath)
+            try {
+              // Attempt to send the Base64 string to the server via POST request.
+              const results = await axios.post(
+                "../api/upload",
+                { image: base64String, filename: file.name },
+                { headers: { "Content-Type": "application/json" } }
+              );
+              // Log the server's response to the console.
+              console.log(results.data);
+              // Setting the image path
+              imagePath = `/uploads/${results.data.name}`;
 
-              } catch (error) {
-                // Handle errors in the request and show an appropriate message.
-                if (axios.isAxiosError(error) && error.response) {
-                  // If the error is from Axios and contains a response, console log the error message.
-                  console.log(`Error uploading image: ${error.response.data.message}`);
-                } else {
-                  // For other types of errors, log to the console.
-                  console.error("An unexpected error occurred", error);
-                }
+              const newWine = {
+                name: name,
+                year: year,
+                type: type,
+                varietal: varietal,
+                image: imagePath,
+              };
+              
+              // Sending a POST request to add a new wine.
+              const response = await axios.post('http://localhost:3001/dashboard/addWine', newWine);
+              // If the wine is added successfully, redirect the user to the dashboard.
+              if (response.status === 200 && response.data.message === "Wine added successfully") {
+                window.location.href = '/dashboard'; // Redirecting to the dashboard upon successful adding.
+                // console.log(response.data.message);
+              } else {
+                alert(response.data.message); // Showing an alert if adding fails.
               }
-            } else {
-              console.error("FileReader did not load the file correctly.");
+            } catch (error) {
+              console.error('Error adding wine:', error);
             }
-          };
-
-          // Initiate reading the file as a Base64-encoded string.
-          reader.readAsDataURL(file);
-        } else {
-          console.log("No file selected");
+          } else {
+            console.error("FileReader did not load the file correctly.");
+          }
         };
 
-        try {
-            const newWine = {
-              name: name,
-              year: year,
-              type: type,
-              varietal: varietal,
-              image: image,
-            };
-            
-            // Sending a POST request to add a new wine.
-            const response = await axios.post('http://localhost:3001/dashboard/addWine', newWine);
-            // If the wine is added successfully, redirect the user to the dashboard.
-            if (response.status === 200 && response.data.message === "Wine added successfully") {
-              window.location.href = '/dashboard';
-            } else {
-              // If adding the wine fails, show an alert with the error message.
-              alert(response.data.message);
-            }
-        } catch (error) {
-            // Log any errors that occur while adding the wine.
-            console.error('Error adding wine:', error);
-        }
+        // Initiate reading the file as a Base64-encoded string.
+        reader.readAsDataURL(file);
+      } else {
+        console.log("No file selected");
+      };
     };
 
     // Rendering the add wine form.

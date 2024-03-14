@@ -9,7 +9,6 @@ export default function EditWine() {
     const [year, setYear] = useState(''); // State hook for storing wine year.
     const [type, setType] = useState('red'); // State hook for storing wine type.
     const [varietal, setVarietal] = useState('Chardonnay'); // State hook for storing wine varietal.
-    const [image, setImage] = useState(''); // State hook for storing wine image.
     const searchParams = useSearchParams(); // Using the useSearchParams hook to get URL query parameters.
 
     const params  = (searchParams.get('id')); // Getting the 'id' parameter from the URL query string.
@@ -26,7 +25,6 @@ export default function EditWine() {
           setType(wine.type);
           setVarietal(wine.varietal);
           setYear(wine.year);
-          setImage(wine.image);
         } catch (error) {
           console.error('Error fetching wine:', error);
         }
@@ -40,6 +38,8 @@ export default function EditWine() {
 
     const handleEditWine = async (event: ChangeEvent<HTMLFormElement>) => {
       event.preventDefault(); // Preventing default form submission behavior.
+
+      let imagePath = '';
 
       // Extract the file from the file input field in the form.
       const files = event.currentTarget.file?.files;
@@ -64,19 +64,27 @@ export default function EditWine() {
               // Log the server's response to the console.
               console.log(results.data);
               // Setting the image path
-              let imagePath = `/uploads/${results.data.name}`; 
-              setImage(imagePath);
-              console.log(imagePath)
+              imagePath = `/uploads/${results.data.name}`;
 
-            } catch (error) {
-              // Handle errors in the request and show an appropriate message.
-              if (axios.isAxiosError(error) && error.response) {
-                // If the error is from Axios and contains a response, console log the error message.
-                console.log(`Error uploading image: ${error.response.data.message}`);
+              // Constructing updated wine data object.
+              const updatedWineData = {
+                name: name,
+                type: type,
+                varietal: varietal,
+                year: year,
+                image: imagePath,
+              };
+        
+              // Sending a PUT request to update the wine data on the server.
+              const response = await axios.put(`http://localhost:3001/dashboard/editWine/${id}`, updatedWineData);
+              if (response.status === 200 && response.data.message === "Wine edited successfully") {
+                window.location.href = '/dashboard'; // Redirecting to the dashboard upon successful editing.
+                // console.log(response.data.message);
               } else {
-                // For other types of errors, log to the console.
-                console.error("An unexpected error occurred", error);
+                alert(response.data.message); // Showing an alert if editing fails.
               }
+            } catch (error) {
+              console.error('Error editing wine:', error);
             }
           } else {
             console.error("FileReader did not load the file correctly.");
@@ -88,29 +96,7 @@ export default function EditWine() {
       } else {
         console.log("No file selected");
       };
-
-        try {
-          // Constructing updated wine data object.
-          const updatedWineData = {
-            name: name,
-            type: type,
-            varietal: varietal,
-            year: year,
-            image: image,
-          };
-    
-          // Sending a PUT request to update the wine data on the server.
-          const response = await axios.put(`http://localhost:3001/dashboard/editWine/${id}`, updatedWineData);
-          if (response.status === 200 && response.data.message === "Wine edited successfully") {
-            window.location.href = '/dashboard'; // Redirecting to the dashboard upon successful editing.
-            // console.log(response.data.message);
-          } else {
-            alert(response.data.message); // Showing an alert if editing fails.
-          }
-        } catch (error) {
-          console.error('Error editing wine:', error);
-        }
-      };
+    };
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen py-10">
@@ -133,9 +119,9 @@ export default function EditWine() {
               className="w-full p-2 border rounded-md"
               required value={type} onChange={(e) => setType(e.target.value)}
             >
-              <option value="red">Red</option>
-              <option value="white">White</option>
-              <option value="rose">Rose</option>
+              <option value="Red">Red</option>
+              <option value="White">White</option>
+              <option value="Rose">Rose</option>
               <option value="Orange">Orange</option>
               <option value="Sparkling">Sparkling</option>
               <option value="Fortified">Fortified</option>
