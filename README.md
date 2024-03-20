@@ -57,10 +57,15 @@ Backend: Express.js, PostgreSQL, pg (PostgreSQL client), CORS
 Other: Next.js (for routing), FileReader API (for file upload)
 
 Backend API Endpoints:
+
 POST /login: Endpoint for user authentication.
+
 GET /dashboard: Endpoint to retrieve the list of wines.
+
 POST /dashboard/addWine: Endpoint to add a new wine to the collection.
+
 POST /dashboard/editWine/:id: Endpoint to fetch details of a specific wine for editing.
+
 PUT /dashboard/editWine/:id: Endpoint to update details of a specific wine.
 
 Contributing:
