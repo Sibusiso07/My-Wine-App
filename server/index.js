@@ -46,6 +46,27 @@ router.post('/login', async (req, res) => {
   }
 });
 
+router.post('/register', async (req, res) => {
+  const {email, password} = req.body;
+  try {
+    const newUser = await db.query("INSERT INTO users (email, password) VALUES ($1, $2)", [email, password]);
+    res.status(200).json({message: "User Registered Successfully"});
+  } catch (error) {
+    console.error("Error registering new user", error);
+    res.status(500).json({message: "User registration failed"});
+  }
+});
+
+router.delete('/delete', async (req, res) => {
+  console.log(req.body);
+  try {
+    const removeWine = await db.query("DELETE FROM wines WHERE id = ?", [req.body]);
+    res.status(200).json({message: "Wine successfully deleted"});
+  } catch (error) {
+    console.error("Unable to delete wine", error);
+    res.status(500).json({message: "Unable to delete wine"});
+  }
+});
 
 router.get('/dashboard', async (req, res) => {
   try {

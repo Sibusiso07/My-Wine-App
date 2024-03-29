@@ -49,6 +49,23 @@ export default function Dashboard() {
       router.push(url);
     }
 
+    // Ftunction to delete wine from the list
+    const handleDelete = async (wine: { id: number }) => {
+      try {
+        const response = await axios.post("http://localhost:3001/delete", {
+          id : wine.id
+        });
+        if (response.status === 200 && response.data.message === "Wine successfully deleted") {
+          router.refresh();
+        } else {
+          alert(response.data.message);
+          console.log("Error deleting wine:", response.data.message);
+        }
+      } catch (error) {
+        console.error("Unable to delete wine", error);
+      }
+    }
+
     // Render the dashboard with wine list and actions.
     return (
       <div className="flex flex-col items-center my-10 min-h-screen py-10 shadow-xl">
@@ -64,8 +81,9 @@ export default function Dashboard() {
                 <TableHead>Type</TableHead>
                 <TableHead>Varietal</TableHead>
                 <TableHead>Year</TableHead>
-                <TableHead></TableHead>
-                <TableHead></TableHead>
+                <TableHead>View</TableHead>
+                <TableHead>Edit</TableHead>
+                <TableHead>Delete</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -83,8 +101,16 @@ export default function Dashboard() {
                   </TableCell>
                   <TableCell>
                     <button
-                    className="bg-sky-600 text-white py-1.5 px-2.5 rounded-md mt-2 hover:bg-sky-800" onClick={() => handleEdit(wine)}>
+                    className="bg-sky-600 text-white py-1.5 px-2.5 rounded-md mt-2 hover:bg-sky-800" 
+                    onClick={() => handleEdit(wine)}>
                     Edit
+                    </button>
+                  </TableCell>
+                  <TableCell>
+                    <button
+                    className="bg-red-500 text-white py-1.5 px-2.5 rounded-md mt-2 hover:bg-red-600" 
+                    onClick={() => handleDelete(wine)}>
+                    Delete
                     </button>
                   </TableCell>
                 </TableRow>
@@ -92,7 +118,8 @@ export default function Dashboard() {
             </TableBody>
           </Table>
         </div>
-        <button className="bg-blue-500 text-white py-2 px-4 rounded-md mt-4 hover:bg-sky-700" onClick={handleAdd}>
+        <button className="bg-blue-500 text-white py-2 px-4 rounded-md mt-4 hover:bg-sky-700" 
+        onClick={handleAdd}>
           Add
         </button>
       </div>
