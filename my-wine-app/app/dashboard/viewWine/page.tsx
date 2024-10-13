@@ -1,9 +1,12 @@
 "use client" 
 
-import { useState, useEffect} from 'react'; // Importing necessary modules from React for handling state and effects.
-import axios from 'axios'; // Importing axios for making HTTP requests.
-import { useSearchParams} from 'next/navigation'; // Importing useSearchParams hook from Next.js for accessing URL query parameters.
-import Image from 'next/image'; // Importing the Image component from Next.js for optimized image loading.
+// Imports.
+import { useState, useEffect} from 'react'; 
+import axios from 'axios'; 
+import { useSearchParams} from 'next/navigation'; 
+import Image from 'next/image';
+// import Zoom from 'react-medium-image-zoom';
+// import 'react-medium-image-zoom/dist/styles.css' 
 
 export default function EditWine() {
     const [name, setName] = useState(''); // State hook for storing wine name.
@@ -56,7 +59,7 @@ export default function EditWine() {
                     width={400}
                     height={400}
                     alt={`${name} Wine`}
-                    className="mx-auto"
+                    className="mx-auto duration-500 ease-in-out hover:scale-150"
                     />
                 </div>
                 <div className="mb-6">

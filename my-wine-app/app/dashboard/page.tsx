@@ -52,6 +52,7 @@ export default function Dashboard() {
     // Ftunction to delete wine from the list
     const handleDelete = async (wine: { id: number }) => {
       try {
+        console.log("wine id >>>", wine);
         const response = await axios.post("http://localhost:3001/delete", {
           id : wine.id
         });

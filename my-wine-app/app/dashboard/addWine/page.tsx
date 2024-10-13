@@ -4,10 +4,11 @@ import { ChangeEvent, useState } from 'react'; // Importing necessary modules fr
 import axios from 'axios'; // Importing axios for making HTTP requests.
 
 export default function AddWine() {
-    const [name, setName] = useState(''); // State hook for storing wine name.
-    const [type, setType] = useState('red'); // State hook for storing wine type.
-    const [varietal, setVarietal] = useState('Chardonnay'); // State hook for storing wine varietal.
-    const [year, setYear] = useState(''); // State hook for storing wine year.
+  // States.
+    const [name, setName] = useState(''); 
+    const [type, setType] = useState('red'); 
+    const [varietal, setVarietal] = useState('Chardonnay'); 
+    const [year, setYear] = useState(''); 
     let imagePath = '';
 
     // Function to handle adding a new wine.
